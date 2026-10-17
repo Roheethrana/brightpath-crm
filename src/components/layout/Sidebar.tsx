@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, CalendarClock, Settings, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, Users, CalendarClock, Settings, GraduationCap, UserCheck } from 'lucide-react';
 import { NavTab, UserRoleInfo } from '../../types/navigation';
 import { Badge } from '../common/Badge';
 
@@ -7,9 +7,15 @@ interface SidebarProps {
   currentTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
   currentUser: UserRoleInfo;
+  onOpenAuthModal?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, currentUser }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  currentTab,
+  onSelectTab,
+  currentUser,
+  onOpenAuthModal
+}) => {
   const navItems: { tab: NavTab; label: string; icon: React.ReactNode }[] = [
     { tab: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { tab: 'leads', label: 'Leads & Enquiries', icon: <Users size={20} /> },
@@ -105,11 +111,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, curre
 
       {/* User Profile Footer */}
       <div
+        onClick={onOpenAuthModal}
         style={{
           padding: '1.25rem 1rem',
           borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-          backgroundColor: 'rgba(0, 0, 0, 0.15)'
+          backgroundColor: 'rgba(0, 0, 0, 0.15)',
+          cursor: onOpenAuthModal ? 'pointer' : 'default',
+          transition: 'background-color 0.15s ease'
         }}
+        title="Click to manage account / switch roles"
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div
@@ -132,10 +142,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, curre
             <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {currentUser.name}
             </div>
-            <div style={{ marginTop: '0.2rem' }}>
+            <div style={{ marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <Badge variant={currentUser.role}>
                 {currentUser.role.toUpperCase()}
               </Badge>
+              {onOpenAuthModal && (
+                <UserCheck size={12} color="#94a3b8" />
+              )}
             </div>
           </div>
         </div>

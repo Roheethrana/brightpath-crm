@@ -9,6 +9,7 @@ interface MobileNavProps {
   currentTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
   currentUser: UserRoleInfo;
+  onOpenAuthModal?: () => void;
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
@@ -16,7 +17,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   onClose,
   currentTab,
   onSelectTab,
-  currentUser
+  currentUser,
+  onOpenAuthModal
 }) => {
   if (!isOpen) return null;
 
@@ -30,6 +32,13 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   const handleSelect = (tab: NavTab) => {
     onSelectTab(tab);
     onClose();
+  };
+
+  const handleOpenAuth = () => {
+    if (onOpenAuthModal) {
+      onOpenAuthModal();
+      onClose();
+    }
   };
 
   return (
@@ -146,7 +155,14 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         </div>
 
         {/* Drawer Footer */}
-        <div style={{ padding: '1.25rem 1rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div
+          onClick={handleOpenAuth}
+          style={{
+            padding: '1.25rem 1rem',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            cursor: onOpenAuthModal ? 'pointer' : 'default'
+          }}
+        >
           <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc' }}>
             {currentUser.name}
           </div>

@@ -1,22 +1,27 @@
 import React from 'react';
-import { Menu, Bell } from 'lucide-react';
+import { Menu, Bell, LogIn, LogOut } from 'lucide-react';
 import { NavTab, UserRoleInfo } from '../../types/navigation';
 import { Badge } from '../common/Badge';
 import { ConnectionBadge } from '../common/ConnectionBadge';
+import { useAuth } from '../../context/AuthContext';
 
 interface HeaderProps {
   currentTab: NavTab;
   onOpenMobileNav: () => void;
   currentUser: UserRoleInfo;
   onOpenSetupModal: () => void;
+  onOpenAuthModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentTab,
   onOpenMobileNav,
   currentUser,
-  onOpenSetupModal
+  onOpenSetupModal,
+  onOpenAuthModal
 }) => {
+  const { isAuthenticated, signOut, role } = useAuth();
+
   const getTabTitle = (tab: NavTab) => {
     switch (tab) {
       case 'dashboard':
@@ -67,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
         {/* Live Supabase Connection Beacon */}
         <ConnectionBadge onClick={onOpenSetupModal} />
 
@@ -90,13 +95,37 @@ export const Header: React.FC<HeaderProps> = ({
           />
         </button>
 
+        {/* User Account & Role Indicator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Badge variant={currentUser.role}>
-            {currentUser.role.toUpperCase()}
+          <Badge variant={role}>
+            {role.toUpperCase()}
           </Badge>
-          <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-main)' }}>
-            {currentUser.name}
-          </span>
+
+          {isAuthenticated ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-main)' }}>
+                {currentUser.name}
+              </span>
+              <button
+                onClick={signOut}
+                className="btn btn-ghost"
+                style={{ padding: '0.4rem', color: '#e11d48' }}
+                title="Sign Out"
+                aria-label="Sign Out"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onOpenAuthModal}
+              className="btn btn-primary"
+              style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
+            >
+              <LogIn size={14} />
+              Sign In
+            </button>
+          )}
         </div>
       </div>
 

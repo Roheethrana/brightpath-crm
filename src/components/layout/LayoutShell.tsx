@@ -9,6 +9,7 @@ interface LayoutShellProps {
   onSelectTab: (tab: NavTab) => void;
   currentUser: UserRoleInfo;
   onOpenSetupModal: () => void;
+  onOpenAuthModal: () => void;
   children: React.ReactNode;
 }
 
@@ -17,6 +18,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
   onSelectTab,
   currentUser,
   onOpenSetupModal,
+  onOpenAuthModal,
   children
 }) => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -29,6 +31,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
           currentTab={currentTab}
           onSelectTab={onSelectTab}
           currentUser={currentUser}
+          onOpenAuthModal={onOpenAuthModal}
         />
       </div>
 
@@ -39,6 +42,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
         currentTab={currentTab}
         onSelectTab={onSelectTab}
         currentUser={currentUser}
+        onOpenAuthModal={onOpenAuthModal}
       />
 
       {/* Main Content Area */}
@@ -48,6 +52,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
           onOpenMobileNav={() => setIsMobileNavOpen(true)}
           currentUser={currentUser}
           onOpenSetupModal={onOpenSetupModal}
+          onOpenAuthModal={onOpenAuthModal}
         />
         <main className="page-body">
           {children}

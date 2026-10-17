@@ -1,21 +1,26 @@
 import { useState } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { LayoutShell } from './components/layout/LayoutShell';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { LeadsPage } from './features/leads/LeadsPage';
 import { FollowupsPage } from './features/followups/FollowupsPage';
 import { SettingsPage } from './features/settings/SettingsPage';
 import { SupabaseSetupModal } from './components/modals/SupabaseSetupModal';
+import { AuthModal } from './features/auth/AuthModal';
 import { NavTab, UserRoleInfo } from './types/navigation';
 
-export function App() {
+function AppContent() {
   const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
   const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // Initial demo user state for Phase 1/2 verification
+  const { user, profile, role } = useAuth();
+
+  // Dynamic user role info derived from active database profile or fallback
   const currentUser: UserRoleInfo = {
-    name: 'Demo Counsellor',
-    role: 'counsellor',
-    email: 'counsellor@brightpath.academy'
+    name: profile?.full_name || user?.email?.split('@')[0] || 'Demo Counsellor',
+    role: role,
+    email: user?.email || 'counsellor@brightpath.academy'
   };
 
   const renderContent = () => {
@@ -33,7 +38,13 @@ export function App() {
       case 'followups':
         return <FollowupsPage />;
       case 'settings':
-        return <SettingsPage currentUser={currentUser} />;
+        return (
+          <SettingsPage
+            currentUser={currentUser}
+            onOpenAuthModal={() => setIsAuthModalOpen(true)}
+            onOpenSetupModal={() => setIsSetupModalOpen(true)}
+          />
+        );
       default:
         return (
           <DashboardPage
@@ -52,6 +63,7 @@ export function App() {
         onSelectTab={setCurrentTab}
         currentUser={currentUser}
         onOpenSetupModal={() => setIsSetupModalOpen(true)}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
       >
         {renderContent()}
       </LayoutShell>
@@ -60,7 +72,21 @@ export function App() {
         isOpen={isSetupModalOpen}
         onClose={() => setIsSetupModalOpen(false)}
       />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onOpenSetupModal={() => setIsSetupModalOpen(true)}
+      />
     </>
+  );
+}
+
+export function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
