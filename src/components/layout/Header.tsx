@@ -2,14 +2,21 @@ import React from 'react';
 import { Menu, Bell } from 'lucide-react';
 import { NavTab, UserRoleInfo } from '../../types/navigation';
 import { Badge } from '../common/Badge';
+import { ConnectionBadge } from '../common/ConnectionBadge';
 
 interface HeaderProps {
   currentTab: NavTab;
   onOpenMobileNav: () => void;
   currentUser: UserRoleInfo;
+  onOpenSetupModal: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentTab, onOpenMobileNav, currentUser }) => {
+export const Header: React.FC<HeaderProps> = ({
+  currentTab,
+  onOpenMobileNav,
+  currentUser,
+  onOpenSetupModal
+}) => {
   const getTabTitle = (tab: NavTab) => {
     switch (tab) {
       case 'dashboard':
@@ -61,6 +68,9 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onOpenMobileNav, cur
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {/* Live Supabase Connection Beacon */}
+        <ConnectionBadge onClick={onOpenSetupModal} />
+
         <button
           className="btn btn-ghost"
           style={{ padding: '0.5rem', borderRadius: '50%', position: 'relative' }}

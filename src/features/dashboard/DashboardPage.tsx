@@ -1,20 +1,79 @@
 import React from 'react';
-import { Users, UserPlus, Award, AlertCircle, TrendingUp, Calendar } from 'lucide-react';
+import { Users, UserPlus, Award, AlertCircle, TrendingUp, Calendar, Database, ArrowRight } from 'lucide-react';
 import { StatCard } from '../../components/common/StatCard';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
+import { getSupabaseConfigStatus } from '../../lib/supabaseClient';
 
 interface DashboardPageProps {
   onNavigateToLeads: () => void;
   onNavigateToFollowups: () => void;
+  onOpenSetupModal: () => void;
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({
   onNavigateToLeads,
-  onNavigateToFollowups
+  onNavigateToFollowups,
+  onOpenSetupModal
 }) => {
+  const config = getSupabaseConfigStatus();
+
   return (
     <div>
+      {/* Configuration Alert Banner if Supabase is disconnected */}
+      {!config.isConfigured && (
+        <div
+          style={{
+            marginBottom: '1.75rem',
+            padding: '1.25rem 1.5rem',
+            borderRadius: 'var(--radius-md)',
+            backgroundColor: '#0f172a',
+            color: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            border: '1px solid #1e293b',
+            boxShadow: 'var(--shadow-md)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                color: '#60a5fa',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Database size={22} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>
+                Supabase Backend Not Connected
+              </div>
+              <div style={{ fontSize: '0.825rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                Add your Project URL and Anon Key in <code>.env</code> to connect live authentication and database persistence.
+              </div>
+            </div>
+          </div>
+
+          <Button
+            variant="primary"
+            onClick={onOpenSetupModal}
+            icon={<ArrowRight size={16} />}
+            style={{ fontSize: '0.85rem' }}
+          >
+            Connect Supabase
+          </Button>
+        </div>
+      )}
+
       {/* Welcome Banner */}
       <div
         style={{
@@ -52,7 +111,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           subtitle="All accessible enquiries"
           icon={<Users size={22} color="#2563eb" />}
           iconBgColor="#eff6ff"
-          trendText="Ready for database connection"
+          trendText={config.isConfigured ? 'Live Supabase Sync' : 'Ready for database connection'}
         />
         <StatCard
           label="New Enquiries"
@@ -60,7 +119,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           subtitle="Unassigned or uncontacted"
           icon={<UserPlus size={22} color="#0891b2" />}
           iconBgColor="#ecfeff"
-          trendText="Phase 2/3 will sync live"
+          trendText="Phase 3 migration will seed leads"
         />
         <StatCard
           label="Converted Admissions"
@@ -104,7 +163,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <TrendingUp size={36} style={{ color: 'var(--color-text-subtle)', marginBottom: '0.75rem' }} />
             <div style={{ fontWeight: 600, color: 'var(--color-text-main)' }}>No Pipeline Data Yet</div>
             <div style={{ fontSize: '0.85rem', maxWidth: '360px', marginTop: '0.35rem' }}>
-              Connect Supabase in Phase 2 to view live lead progression from New, Contacted, Qualified to Converted.
+              {config.isConfigured
+                ? 'Run Phase 3 database migrations to populate pipeline data.'
+                : 'Connect Supabase to view live lead progression across New, Contacted, Qualified, and Converted states.'}
             </div>
           </div>
         </Card>

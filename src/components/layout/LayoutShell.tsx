@@ -8,6 +8,7 @@ interface LayoutShellProps {
   currentTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
   currentUser: UserRoleInfo;
+  onOpenSetupModal: () => void;
   children: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
   currentTab,
   onSelectTab,
   currentUser,
+  onOpenSetupModal,
   children
 }) => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -45,6 +47,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
           currentTab={currentTab}
           onOpenMobileNav={() => setIsMobileNavOpen(true)}
           currentUser={currentUser}
+          onOpenSetupModal={onOpenSetupModal}
         />
         <main className="page-body">
           {children}
