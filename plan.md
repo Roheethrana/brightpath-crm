@@ -27,8 +27,8 @@ Every single phase follows this strict 6-step loop:
 | **0** | Baseline & Account Readiness Check | Status report, account checklist | Clean repo, Node/npm verified | **COMPLETED** |
 | **1** | Scaffolding, Design System & Layout Shell | React+TS+Vite, CSS tokens, Sidebar, Route shells | Clean build, responsive navigation | **COMPLETED** |
 | **2** | Supabase Client & Environment Safety | `supabaseClient.ts`, `.env.example`, Error banner | Verified missing env UI test & client init | **COMPLETED** |
-| **3** | Database Migrations, RLS & Seed Data | 3 SQL migrations, TypeScript schema types | SQL applied in Supabase, RLS active | **READY TO START** |
-| **4** | Auth, Profile Lifecycle & Role Access | Sign-in modal, session restore, role guards | Sign-in/out, session refresh test | PENDING |
+| **3** | Database Migrations, RLS & Seed Data | 3 SQL migrations, TypeScript schema types | Migrations created & TS types verified | **COMPLETED** |
+| **4** | Auth, Profile Lifecycle & Role Access | Sign-in modal, session restore, role guards | Sign-in/out, session refresh test | **READY TO START** |
 | **5** | Lead Intake, Directory, Search & Filters | Lead table, filters bar, create modal with validation | Lead creation persists to Supabase | PENDING |
 | **6** | Status Lifecycle & Activity Timeline | Lead drawer, lost reason modal, activity log | Status updates, activity audit logged | PENDING |
 | **7** | Follow-ups & Overdue Engine | Scheduler, overdue tabs, complete action | Overdue logic & completion verified | PENDING |
