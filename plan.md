@@ -29,8 +29,8 @@ Every single phase follows this strict 6-step loop:
 | **2** | Supabase Client & Environment Safety | `supabaseClient.ts`, `.env.example`, Error banner | Verified missing env UI test & client init | **COMPLETED** |
 | **3** | Database Migrations, RLS & Seed Data | 3 SQL migrations, TypeScript schema types | Migrations created & TS types verified | **COMPLETED** |
 | **4** | Auth, Profile Lifecycle & Role Access | Sign-in modal, session restore, role guards | AuthContext, login/signup & role switching verified | **COMPLETED** |
-| **5** | Lead Intake, Directory, Search & Filters | Lead table, filters bar, create modal with validation | Lead creation persists to Supabase | **READY TO START** |
-| **6** | Status Lifecycle & Activity Timeline | Lead drawer, lost reason modal, activity log | Status updates, activity audit logged | PENDING |
+| **5** | Lead Intake, Directory, Search & Filters | Lead table, filters bar, create modal with validation | Lead creation persists to Supabase | **COMPLETED** |
+| **6** | Status Lifecycle & Activity Timeline | Lead drawer, lost reason modal, activity log | Status updates, activity audit logged | **READY TO START** |
 | **7** | Follow-ups & Overdue Engine | Scheduler, overdue tabs, complete action | Overdue logic & completion verified | PENDING |
 | **8** | Real-Time Dashboard & Reconciled KPIs | KPI cards, pipeline charts, overdue widget | KPIs reconcile with list queries | PENDING |
 | **9** | Accessibility, Mobile Polish & Error States | A11y polish, skeletons, offline banner | Keyboard navigation, 375px mobile test | PENDING |
