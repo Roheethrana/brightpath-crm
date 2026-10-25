@@ -31,6 +31,7 @@ function AppContent() {
             onNavigateToLeads={() => setCurrentTab('leads')}
             onNavigateToFollowups={() => setCurrentTab('followups')}
             onOpenSetupModal={() => setIsSetupModalOpen(true)}
+            onNavigateToLead={() => setCurrentTab('leads')}
           />
         );
       case 'leads':

@@ -1,26 +1,75 @@
-import React from 'react';
-import { Users, UserPlus, Award, AlertCircle, TrendingUp, Calendar, Database, ArrowRight } from 'lucide-react';
-import { StatCard } from '../../components/common/StatCard';
-import { Card } from '../../components/common/Card';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Calendar, UserPlus, Database, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '../../components/common/Button';
 import { getSupabaseConfigStatus } from '../../lib/supabaseClient';
+import { DashboardKPIs } from './DashboardKPIs';
+import { LeadsByStatusChart } from './LeadsByStatusChart';
+import { LeadsBySourceChart } from './LeadsBySourceChart';
+import { OverdueFollowupsWidget } from './OverdueFollowupsWidget';
+import { Lead, FollowUp } from '../../types/database.types';
+import { fetchLeads } from '../../services/leads.service';
+import { fetchFollowups, categorizeFollowups } from '../../services/followups.service';
 
 interface DashboardPageProps {
   onNavigateToLeads: () => void;
   onNavigateToFollowups: () => void;
   onOpenSetupModal: () => void;
+  onNavigateToLead?: (leadId: string) => void;
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({
   onNavigateToLeads,
   onNavigateToFollowups,
-  onOpenSetupModal
+  onOpenSetupModal,
+  onNavigateToLead,
 }) => {
   const config = getSupabaseConfigStatus();
 
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [followups, setFollowups] = useState<FollowUp[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isFallbackMode, setIsFallbackMode] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const loadDashboardData = useCallback(async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const [leadsRes, followupsRes] = await Promise.all([
+        fetchLeads(),
+        fetchFollowups(),
+      ]);
+
+      setLeads(leadsRes.leads);
+      setFollowups(followupsRes.followups);
+      setIsFallbackMode(leadsRes.isFallback || followupsRes.isFallback);
+
+      if (leadsRes.error || followupsRes.error) {
+        setErrorMessage(leadsRes.error || followupsRes.error);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to refresh dashboard';
+      setErrorMessage(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
+
+  // Compute reconciled KPIs
+  const totalLeads = leads.length;
+  const newLeads = leads.filter((l) => l.status === 'New').length;
+  const convertedLeads = leads.filter((l) => l.status === 'Converted').length;
+
+  const { overdue } = categorizeFollowups(followups);
+  const overdueCount = overdue.length;
+
   return (
     <div>
-      {/* Configuration Alert Banner if Supabase is disconnected */}
+      {/* Supabase Disconnected Banner */}
       {!config.isConfigured && (
         <div
           style={{
@@ -35,7 +84,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             flexWrap: 'wrap',
             gap: '1rem',
             border: '1px solid #1e293b',
-            boxShadow: 'var(--shadow-md)'
+            boxShadow: 'var(--shadow-md)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -48,7 +97,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 color: '#60a5fa',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
               }}
             >
               <Database size={22} />
@@ -74,6 +123,27 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       )}
 
+      {/* Error alert if any */}
+      {errorMessage && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.75rem 1rem',
+            backgroundColor: '#fee2e2',
+            border: '1px solid #fecaca',
+            borderRadius: 'var(--radius-md)',
+            color: '#991b1b',
+            fontSize: '0.8125rem',
+            marginBottom: '1.25rem',
+          }}
+        >
+          <AlertCircle size={16} />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
       {/* Welcome Banner */}
       <div
         style={{
@@ -82,7 +152,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           justifyContent: 'space-between',
           marginBottom: '1.75rem',
           flexWrap: 'wrap',
-          gap: '1rem'
+          gap: '1rem',
         }}
       >
         <div>
@@ -94,6 +164,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <Button
+            variant="secondary"
+            onClick={() => loadDashboardData()}
+            disabled={isLoading}
+            icon={<RefreshCw size={15} />}
+          >
+            Refresh
+          </Button>
           <Button variant="secondary" onClick={onNavigateToFollowups} icon={<Calendar size={16} />}>
             View Schedule
           </Button>
@@ -103,103 +181,31 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid-stats">
-        <StatCard
-          label="Total Leads"
-          value="0"
-          subtitle="All accessible enquiries"
-          icon={<Users size={22} color="#2563eb" />}
-          iconBgColor="#eff6ff"
-          trendText={config.isConfigured ? 'Live Supabase Sync' : 'Ready for database connection'}
-        />
-        <StatCard
-          label="New Enquiries"
-          value="0"
-          subtitle="Unassigned or uncontacted"
-          icon={<UserPlus size={22} color="#0891b2" />}
-          iconBgColor="#ecfeff"
-          trendText="Phase 3 migration will seed leads"
-        />
-        <StatCard
-          label="Converted Admissions"
-          value="0"
-          subtitle="Successfully enrolled students"
-          icon={<Award size={22} color="#059669" />}
-          iconBgColor="#ecfdf5"
-          trendText="Conversion Rate: 0.0%"
-        />
-        <StatCard
-          label="Overdue Follow-ups"
-          value="0"
-          subtitle="Tasks pending past due date"
-          icon={<AlertCircle size={22} color="#e11d48" />}
-          iconBgColor="#fff1f2"
-          isUrgent={false}
-          trendText="Zero overdue"
+      {/* Reconciled KPI Cards Grid */}
+      <DashboardKPIs
+        totalLeads={totalLeads}
+        newLeads={newLeads}
+        convertedLeads={convertedLeads}
+        overdueCount={overdueCount}
+        isLiveSync={config.isConfigured && !isFallbackMode}
+      />
+
+      {/* Charts & Breakdown Section */}
+      <div className="grid-two-col" style={{ marginTop: '1.5rem' }}>
+        {/* Pipeline Distribution */}
+        <LeadsByStatusChart leads={leads} />
+
+        {/* Overdue Follow-ups Widget */}
+        <OverdueFollowupsWidget
+          overdueTasks={overdue}
+          onNavigateToFollowups={onNavigateToFollowups}
+          onNavigateToLead={onNavigateToLead}
         />
       </div>
 
-      {/* Main Breakdown Section */}
-      <div className="grid-two-col">
-        <Card
-          title="Pipeline Distribution by Status"
-          subtitle="Enquiries progressing from New to Converted"
-        >
-          <div
-            style={{
-              padding: '3rem 1.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              color: 'var(--color-text-muted)',
-              backgroundColor: 'var(--color-bg-app)',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px dashed var(--color-border)'
-            }}
-          >
-            <TrendingUp size={36} style={{ color: 'var(--color-text-subtle)', marginBottom: '0.75rem' }} />
-            <div style={{ fontWeight: 600, color: 'var(--color-text-main)' }}>No Pipeline Data Yet</div>
-            <div style={{ fontSize: '0.85rem', maxWidth: '360px', marginTop: '0.35rem' }}>
-              {config.isConfigured
-                ? 'Run Phase 3 database migrations to populate pipeline data.'
-                : 'Connect Supabase to view live lead progression across New, Contacted, Qualified, and Converted states.'}
-            </div>
-          </div>
-        </Card>
-
-        <Card
-          title="Upcoming Follow-ups"
-          subtitle="Action items requiring counsellor attention"
-          action={
-            <Button variant="ghost" onClick={onNavigateToFollowups} style={{ fontSize: '0.8rem', padding: '0.35rem 0.65rem' }}>
-              View All
-            </Button>
-          }
-        >
-          <div
-            style={{
-              padding: '3rem 1.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              color: 'var(--color-text-muted)',
-              backgroundColor: 'var(--color-bg-app)',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px dashed var(--color-border)'
-            }}
-          >
-            <Calendar size={36} style={{ color: 'var(--color-text-subtle)', marginBottom: '0.75rem' }} />
-            <div style={{ fontWeight: 600, color: 'var(--color-text-main)' }}>No Scheduled Tasks</div>
-            <div style={{ fontSize: '0.85rem', marginTop: '0.35rem' }}>
-              Follow-ups scheduled with prospective students will appear here.
-            </div>
-          </div>
-        </Card>
+      {/* Channel Performance Full Width Grid */}
+      <div style={{ marginTop: '1.5rem' }}>
+        <LeadsBySourceChart leads={leads} />
       </div>
     </div>
   );
