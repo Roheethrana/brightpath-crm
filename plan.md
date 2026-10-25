@@ -33,8 +33,8 @@ Every single phase follows this strict 6-step loop:
 | **6** | Status Lifecycle & Activity Timeline | Lead drawer, lost reason modal, activity log | Status updates, activity audit logged | **COMPLETED** |
 | **7** | Follow-ups & Overdue Engine | Scheduler, overdue tabs, complete action | Overdue logic & completion verified | **COMPLETED** |
 | **8** | Real-Time Dashboard & Reconciled KPIs | KPI cards, pipeline charts, overdue widget | KPIs reconcile with list queries | **COMPLETED** |
-| **9** | Accessibility, Mobile Polish & Error States | A11y polish, skeletons, offline banner | Keyboard navigation, 375px mobile test | **READY TO START** |
-| **10** | Production Build Audit & Handover | Clean build, `README.md`, handover report | `npm run build` clean, live smoke test | PENDING |
+| **9** | Accessibility, Mobile Polish & Error States | A11y polish, skeletons, offline banner | Keyboard navigation, 375px mobile test | **COMPLETED** |
+| **10** | Production Build Audit & Handover | Clean build, `README.md`, handover report | `npm run build` clean, live smoke test | **READY TO START** |
 
 ---
 

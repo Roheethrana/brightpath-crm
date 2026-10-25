@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, User, Phone, Mail, BookOpen, Share2, AlertCircle } from 'lucide-react';
 import { Profile, LeadStatus, LeadSource } from '../../types/database.types';
 import { Button } from '../../components/common/Button';
@@ -48,6 +48,16 @@ export const CreateLeadModal: React.FC<CreateLeadModalProps> = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isSubmitting) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isSubmitting, onClose]);
 
   if (!isOpen) return null;
 

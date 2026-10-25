@@ -62,6 +62,17 @@ export const LeadDetailDrawer: React.FC<LeadDetailDrawerProps> = ({
     }
   }, [lead]);
 
+  // Escape key dismiss for drawer
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isLostModalOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isLostModalOpen, onClose]);
+
   const loadActivities = async (leadId: string) => {
     setIsLoadingActivities(true);
     const { activities: data } = await fetchLeadActivities(leadId);

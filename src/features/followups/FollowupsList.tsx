@@ -25,9 +25,31 @@ export const FollowupsList: React.FC<FollowupsListProps> = ({
 
   if (isLoading) {
     return (
-      <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-        <div style={{ display: 'inline-block', width: '28px', height: '28px', border: '3px solid #cbd5e1', borderTopColor: 'var(--color-accent)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-        <p style={{ marginTop: '0.75rem', fontSize: '0.875rem' }}>Loading follow-up tasks...</p>
+      <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+        {[1, 2, 3].map((idx) => (
+          <div
+            key={idx}
+            style={{
+              padding: '1.25rem',
+              backgroundColor: '#ffffff',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-md)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div className="skeleton-box" style={{ width: '160px', height: '20px' }} />
+              <div className="skeleton-box" style={{ width: '80px', height: '28px' }} />
+            </div>
+            <div className="skeleton-box" style={{ width: '100%', height: '36px' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div className="skeleton-box" style={{ width: '180px', height: '14px' }} />
+              <div className="skeleton-box" style={{ width: '120px', height: '14px' }} />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

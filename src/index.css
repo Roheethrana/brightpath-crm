@@ -410,3 +410,75 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   border: 1px solid #1e293b;
   position: relative;
 }
+
+/* ==========================================================================
+   Phase 9: Accessibility, Responsive Polish & Resilient Error States
+   ========================================================================== */
+
+/* High-contrast focus-visible rings for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--color-accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* Accessible hidden utility (screen readers) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Loading skeleton pulse keyframes */
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
+    background-color: #e2e8f0;
+  }
+  50% {
+    opacity: 0.5;
+    background-color: #cbd5e1;
+  }
+}
+
+.skeleton-box {
+  border-radius: var(--radius-sm);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* Mobile responsive polish for 375px screens */
+@media (max-width: 640px) {
+  /* Prevent iOS automatic zoom on inputs */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  .page-body {
+    padding: 1rem 0.75rem !important;
+  }
+
+  .grid-stats {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Full-width buttons on mobile modals */
+  .modal-actions {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+
+  .card {
+    padding: 1rem !important;
+  }
+}
+

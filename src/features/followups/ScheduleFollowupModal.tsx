@@ -39,6 +39,16 @@ export const ScheduleFollowupModal: React.FC<ScheduleFollowupModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isSubmitting) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isSubmitting, onClose]);
+
   if (!isOpen) return null;
 
   const validate = (): boolean => {

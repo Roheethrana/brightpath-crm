@@ -47,9 +47,26 @@ const getSourceBadgeStyle = (source: string): { bg: string; color: string } => {
 export const LeadTable: React.FC<LeadTableProps> = ({ leads, isLoading, onSelectLead }) => {
   if (isLoading) {
     return (
-      <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-        <div style={{ display: 'inline-block', width: '28px', height: '28px', border: '3px solid #cbd5e1', borderTopColor: 'var(--color-accent)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-        <p style={{ marginTop: '0.75rem', fontSize: '0.875rem' }}>Loading enquiries...</p>
+      <div style={{ padding: '1rem' }}>
+        {[1, 2, 3, 4, 5].map((idx) => (
+          <div
+            key={idx}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              padding: '1rem',
+              borderBottom: '1px solid var(--color-border)',
+            }}
+          >
+            <div className="skeleton-box" style={{ width: '140px', height: '20px' }} />
+            <div className="skeleton-box" style={{ width: '120px', height: '16px' }} />
+            <div className="skeleton-box" style={{ width: '180px', height: '16px' }} />
+            <div className="skeleton-box" style={{ width: '70px', height: '20px', borderRadius: '9999px' }} />
+            <div className="skeleton-box" style={{ width: '80px', height: '22px', borderRadius: '9999px' }} />
+            <div className="skeleton-box" style={{ width: '100px', height: '16px' }} />
+          </div>
+        ))}
       </div>
     );
   }
