@@ -269,3 +269,99 @@ export async function createLead(leadData: {
     return { lead: null, error: message };
   }
 }
+
+/**
+ * Update lead status with optional lost reason and record activity audit log
+ */
+export async function updateLeadStatus(
+  leadId: string,
+  newStatus: LeadStatus,
+  lostReason?: string | null
+): Promise<{ success: boolean; lead: Lead | null; error: string | null }> {
+  const reason = newStatus === 'Lost' ? (lostReason?.trim() || null) : null;
+
+  if (!supabase) {
+    const target = FALLBACK_LEADS.find((l) => l.id === leadId);
+    if (!target) {
+      return { success: false, lead: null, error: 'Lead not found' };
+    }
+    target.status = newStatus;
+    target.lost_reason = reason;
+    target.updated_at = new Date().toISOString();
+
+    return { success: true, lead: { ...target }, error: null };
+  }
+
+  try {
+    const updatePayload: {
+      status: LeadStatus;
+      lost_reason: string | null;
+      updated_at: string;
+    } = {
+      status: newStatus,
+      lost_reason: reason,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from('leads')
+      .update(updatePayload)
+      .eq('id', leadId)
+      .select(`
+        *,
+        assignee:assigned_to (id, full_name, role)
+      `)
+      .single();
+
+    if (error) {
+      return { success: false, lead: null, error: error.message };
+    }
+
+    return { success: true, lead: data as unknown as Lead, error: null };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Failed to update lead status';
+    return { success: false, lead: null, error: msg };
+  }
+}
+
+/**
+ * Update general lead details (assignee, notes, course, etc.)
+ */
+export async function updateLeadDetails(
+  leadId: string,
+  updates: Partial<Omit<Lead, 'id' | 'created_at' | 'assignee'>>
+): Promise<{ success: boolean; lead: Lead | null; error: string | null }> {
+  if (!supabase) {
+    const target = FALLBACK_LEADS.find((l) => l.id === leadId);
+    if (!target) {
+      return { success: false, lead: null, error: 'Lead not found' };
+    }
+    Object.assign(target, updates, { updated_at: new Date().toISOString() });
+    return { success: true, lead: { ...target }, error: null };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('leads')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', leadId)
+      .select(`
+        *,
+        assignee:assigned_to (id, full_name, role)
+      `)
+      .single();
+
+    if (error) {
+      return { success: false, lead: null, error: error.message };
+    }
+
+    return { success: true, lead: data as unknown as Lead, error: null };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Failed to update lead details';
+    return { success: false, lead: null, error: msg };
+  }
+}
+

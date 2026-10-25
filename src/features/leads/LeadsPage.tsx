@@ -5,6 +5,7 @@ import { Card } from '../../components/common/Card';
 import { LeadTable } from './LeadTable';
 import { LeadFiltersBar } from './LeadFiltersBar';
 import { CreateLeadModal } from './CreateLeadModal';
+import { LeadDetailDrawer } from './LeadDetailDrawer';
 import { Lead, Profile, LeadStatus, LeadSource } from '../../types/database.types';
 import { fetchLeads, fetchAssignees, createLead } from '../../services/leads.service';
 
@@ -21,8 +22,10 @@ export const LeadsPage: React.FC = () => {
   const [selectedSource, setSelectedSource] = useState('all');
   const [selectedAssignee, setSelectedAssignee] = useState('all');
 
-  // Create Modal
+  // Modals & Drawers
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Load assignees on mount
   useEffect(() => {
@@ -217,7 +220,8 @@ export const LeadsPage: React.FC = () => {
           leads={leads}
           isLoading={isLoading}
           onSelectLead={(lead) => {
-            console.log('Selected lead:', lead.id);
+            setSelectedLead(lead);
+            setIsDrawerOpen(true);
           }}
         />
       </Card>
@@ -227,6 +231,23 @@ export const LeadsPage: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSave={handleSaveLead}
+        assignees={assignees}
+      />
+
+      {/* Lead Detail & Activity Drawer */}
+      <LeadDetailDrawer
+        lead={selectedLead}
+        isOpen={isDrawerOpen}
+        onClose={() => {
+          setIsDrawerOpen(false);
+          setSelectedLead(null);
+        }}
+        onLeadUpdated={(updatedLead) => {
+          setSelectedLead(updatedLead);
+          setLeads((prev) =>
+            prev.map((l) => (l.id === updatedLead.id ? updatedLead : l))
+          );
+        }}
         assignees={assignees}
       />
     </div>
