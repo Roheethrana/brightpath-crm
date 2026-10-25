@@ -36,7 +36,7 @@ function AppContent() {
       case 'leads':
         return <LeadsPage />;
       case 'followups':
-        return <FollowupsPage />;
+        return <FollowupsPage onNavigateToLead={() => setCurrentTab('leads')} />;
       case 'settings':
         return (
           <SettingsPage

@@ -31,8 +31,8 @@ Every single phase follows this strict 6-step loop:
 | **4** | Auth, Profile Lifecycle & Role Access | Sign-in modal, session restore, role guards | AuthContext, login/signup & role switching verified | **COMPLETED** |
 | **5** | Lead Intake, Directory, Search & Filters | Lead table, filters bar, create modal with validation | Lead creation persists to Supabase | **COMPLETED** |
 | **6** | Status Lifecycle & Activity Timeline | Lead drawer, lost reason modal, activity log | Status updates, activity audit logged | **COMPLETED** |
-| **7** | Follow-ups & Overdue Engine | Scheduler, overdue tabs, complete action | Overdue logic & completion verified | **READY TO START** |
-| **8** | Real-Time Dashboard & Reconciled KPIs | KPI cards, pipeline charts, overdue widget | KPIs reconcile with list queries | PENDING |
+| **7** | Follow-ups & Overdue Engine | Scheduler, overdue tabs, complete action | Overdue logic & completion verified | **COMPLETED** |
+| **8** | Real-Time Dashboard & Reconciled KPIs | KPI cards, pipeline charts, overdue widget | KPIs reconcile with list queries | **READY TO START** |
 | **9** | Accessibility, Mobile Polish & Error States | A11y polish, skeletons, offline banner | Keyboard navigation, 375px mobile test | PENDING |
 | **10** | Production Build Audit & Handover | Clean build, `README.md`, handover report | `npm run build` clean, live smoke test | PENDING |
 
